@@ -5,10 +5,13 @@ import type {
   ClassTeacherRole,
   CreateClassInput,
   CreateCourseInput,
+  CreateLessonInput,
+  CreateResourceInput,
   InstitutionRole,
   StartClassInput,
   TeacherCapability,
   TeacherClassSummary,
+  TeacherCourseDetail,
   TeacherDashboardData,
   TeacherMemberOption,
   TeacherStudentOption,
@@ -42,6 +45,17 @@ export interface TeacherWorkspaceWriter {
   createCourse(input: CreateCourseInput): Promise<TeacherWriteResult>
   /** 编辑课包，含 `draft ⇄ ready` 发布/退回。 */
   updateCourse(courseId: string, patch: UpdateCoursePatch): Promise<TeacherWriteResult>
+  /** 追加章节（序号由服务端决定）。 */
+  createChapter(courseId: string, title: string): Promise<TeacherWriteResult>
+  /** 在指定章节下追加课时。 */
+  createLesson(courseId: string, chapterId: string, input: CreateLessonInput): Promise<TeacherWriteResult>
+  /** 给课时挂资源。 */
+  createResource(
+    courseId: string,
+    chapterId: string,
+    lessonId: string,
+    input: CreateResourceInput,
+  ): Promise<TeacherWriteResult>
   /** 按用户 id 加入学生（仅机构 owner/admin）。 */
   addStudent(classId: string, studentUserId: string): Promise<TeacherWriteResult>
   /** 移出学生：后端写退班标记而不是删除记录（仅机构 owner/admin）。 */
@@ -72,6 +86,12 @@ export interface TeacherWorkspaceSource {
   searchStudents?(query: string): Promise<TeacherStudentOption[] | null>
   /** 机构成员查找（分配任课老师用）；同样是 `null` 表示查找失败。 */
   searchTeachers?(query: string): Promise<TeacherMemberOption[] | null>
+  /**
+   * 按需拉取课包详情（含章节、课时、资源）。
+   *
+   * 工作区只带课包摘要：大纲按需拉，`null` 表示读不出来（调用方按失败处理，不要假装"没有章节"）。
+   */
+  loadCourse?(courseId: string): Promise<TeacherCourseDetail | null>
   readonly writer?: TeacherWorkspaceWriter
 }
 
@@ -169,6 +189,61 @@ const TEACHER_CAPABILITY_IDS: readonly TeacherCapability[] = ['chat', 'image', '
 
 function toTeacherCapabilities(raw: string[]): TeacherCapability[] {
   return raw.filter((item): item is TeacherCapability => (TEACHER_CAPABILITY_IDS as readonly string[]).includes(item))
+}
+
+/** 与后端 `TeacherCourseDetailPayload` 对齐的课包详情负载。 */
+export interface TeacherWorkspaceCourseDetail {
+  course: TeacherWorkspaceCourse
+  chapters: Array<{
+    id: string
+    title: string
+    order: number
+    lessons: Array<{
+      id: string
+      title: string
+      order: number
+      durationMinutes: number
+      objectives: string[]
+      steps: string[]
+      teacherTips: string[]
+      assignment: string
+      capabilities: string[]
+      skills: string[]
+      mcpServers: string[]
+      resources: Array<{ id: string; title: string; type: string; status: string }>
+    }>
+  }>
+}
+
+/** 课包详情映射：只填后端确实给过的字段（内容完善度后端没有，留空显示占位符）。 */
+export function toCourseDetail(payload: TeacherWorkspaceCourseDetail): TeacherCourseDetail {
+  return {
+    ...payload.course,
+    assignedClassIds: payload.course.assignedClassIds,
+    chapters: payload.chapters.map((chapter) => ({
+      id: chapter.id,
+      title: chapter.title,
+      order: chapter.order,
+      lessons: chapter.lessons.map((lesson) => ({
+        id: lesson.id,
+        title: lesson.title,
+        durationMinutes: lesson.durationMinutes,
+        objectives: lesson.objectives,
+        steps: lesson.steps,
+        teacherTips: lesson.teacherTips,
+        assignment: lesson.assignment,
+        capabilities: lesson.capabilities as TeacherCapability[],
+        skills: lesson.skills,
+        mcpServers: lesson.mcpServers,
+        resources: lesson.resources.map((resource) => ({
+          id: resource.id,
+          title: resource.title,
+          type: resource.type as TeacherCourseDetail['chapters'][number]['lessons'][number]['resources'][number]['type'],
+          status: resource.status === 'planned' ? 'planned' : 'ready',
+        })),
+      })),
+    })),
+  }
 }
 
 /**
@@ -313,6 +388,15 @@ export function createApiTeacherWorkspaceSource(): TeacherWorkspaceSource {
         return null
       }
     },
+    async loadCourse(courseId: string) {
+      try {
+        const payload = (await api.get(`/api/teacher/courses/${courseId}`)) as TeacherWorkspaceCourseDetail
+        return toCourseDetail(payload)
+      } catch {
+        // 读不出来返回 null：调用方要显示"大纲读取失败"，而不是"这门课没有章节"
+        return null
+      }
+    },
     writer: {
       async assignCourse(classId, courseId) {
         try {
@@ -342,6 +426,30 @@ export function createApiTeacherWorkspaceSource(): TeacherWorkspaceSource {
       async updateCourse(courseId, patch) {
         try {
           await api.patch(`/api/teacher/courses/${courseId}`, patch)
+          return { ok: true }
+        } catch {
+          return { ok: false, message: TEACHER_WRITE_FAILED }
+        }
+      },
+      async createChapter(courseId, title) {
+        try {
+          await api.post(`/api/teacher/courses/${courseId}/chapters`, { title })
+          return { ok: true }
+        } catch {
+          return { ok: false, message: TEACHER_WRITE_FAILED }
+        }
+      },
+      async createLesson(courseId, chapterId, input) {
+        try {
+          await api.post(`/api/teacher/courses/${courseId}/chapters/${chapterId}/lessons`, input)
+          return { ok: true }
+        } catch {
+          return { ok: false, message: TEACHER_WRITE_FAILED }
+        }
+      },
+      async createResource(courseId, chapterId, lessonId, input) {
+        try {
+          await api.post(`/api/teacher/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/resources`, input)
           return { ok: true }
         } catch {
           return { ok: false, message: TEACHER_WRITE_FAILED }

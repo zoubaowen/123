@@ -27,7 +27,10 @@ import type {
   ClassTeacherRole,
   CreateClassInput,
   CreateCourseInput,
+  CreateLessonInput,
+  CreateResourceInput,
   StartClassInput,
+  TeacherCourseDetail,
   TeacherDashboardData,
   TeacherMemberOption,
   TeacherStudentLearningStatus,
@@ -47,6 +50,21 @@ interface TeacherWorkspaceContextValue {
   createClass: (input: CreateClassInput) => Promise<boolean>
   createCourse: (input: CreateCourseInput) => Promise<boolean>
   updateCourse: (courseId: string, patch: UpdateCoursePatch) => Promise<boolean>
+  createChapter: (courseId: string, title: string) => Promise<boolean>
+  createLesson: (courseId: string, chapterId: string, input: CreateLessonInput) => Promise<boolean>
+  createResource: (
+    courseId: string,
+    chapterId: string,
+    lessonId: string,
+    input: CreateResourceInput,
+  ) => Promise<boolean>
+  /**
+   * 按需拉取课包大纲。
+   *
+   * `null` 表示读不出来（与"这门课还没有章节"不同），调用方必须分开显示。
+   * 数据源不支持时返回 `undefined`，界面按"该数据源没有大纲接口"处理。
+   */
+  loadCourse: (courseId: string) => Promise<TeacherCourseDetail | null | undefined>
   addStudent: (classId: string, studentUserId: string) => Promise<boolean>
   removeStudent: (classId: string, studentUserId: string) => Promise<boolean>
   setClassBudget: (classId: string, creditLimit: number | null) => Promise<boolean>
@@ -79,6 +97,10 @@ const defaultValue: TeacherWorkspaceContextValue = {
   createClass: async () => false,
   createCourse: async () => false,
   updateCourse: async () => false,
+  createChapter: async () => false,
+  createLesson: async () => false,
+  createResource: async () => false,
+  loadCourse: async () => undefined,
   addStudent: async () => false,
   removeStudent: async () => false,
   setClassBudget: async () => false,
@@ -308,6 +330,24 @@ export function TeacherWorkspaceProvider({
         if (apiWriter) return writeThenReloadAwaitable(() => apiWriter.updateCourse(courseId, patch))
         applyLocally((current) => updateTeacherCourse(current, courseId, patch))
         return true
+      },
+      createChapter: async (courseId: string, title: string) => {
+        if (apiWriter) return writeThenReloadAwaitable(() => apiWriter.createChapter(courseId, title))
+        return false
+      },
+      createLesson: async (courseId: string, chapterId: string, input: CreateLessonInput) => {
+        if (apiWriter) return writeThenReloadAwaitable(() => apiWriter.createLesson(courseId, chapterId, input))
+        return false
+      },
+      createResource: async (courseId: string, chapterId: string, lessonId: string, input: CreateResourceInput) => {
+        if (apiWriter) {
+          return writeThenReloadAwaitable(() => apiWriter.createResource(courseId, chapterId, lessonId, input))
+        }
+        return false
+      },
+      loadCourse: async (courseId: string) => {
+        if (!source.loadCourse) return undefined
+        return source.loadCourse(courseId)
       },
       addStudent: async (classId: string, studentUserId: string) => {
         if (apiWriter) return writeThenReloadAwaitable(() => apiWriter.addStudent(classId, studentUserId))

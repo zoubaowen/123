@@ -28,7 +28,8 @@ export interface TeacherCourseLessonDetail {
   id: string
   title: string
   durationMinutes: number
-  completion: number
+  /** 课时内容完善度；后端不提供时缺省，界面显示占位符而不是 0%。 */
+  completion?: number
   objectives: string[]
   steps: string[]
   teacherTips: string[]
@@ -126,6 +127,26 @@ export interface UpdateCoursePatch {
   ageRange?: string
   expectedOutcome?: string
   goals?: string[]
+}
+
+/** 追加课时的入参：数组字段缺省为空。 */
+export interface CreateLessonInput {
+  title: string
+  durationMinutes: number
+  objectives?: string[]
+  steps?: string[]
+  teacherTips?: string[]
+  assignment?: string
+  capabilities?: string[]
+  skills?: string[]
+  mcpServers?: string[]
+}
+
+/** 追加课时资源的入参：`status` 缺省由后端存成 `planned`。 */
+export interface CreateResourceInput {
+  title: string
+  type: TeacherLessonResourceType
+  status?: 'ready' | 'planned'
 }
 
 export interface TeacherLesson {

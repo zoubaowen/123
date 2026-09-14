@@ -1,14 +1,22 @@
 import { XiaoBao } from '@ai-xiaobao/chat-core'
-import { ArrowLeft, CheckCircle2, CircleDotDashed, ClipboardCheck, Sparkles, UsersRound } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowLeft, CheckCircle2, CircleDotDashed, ClipboardCheck, Plus, Sparkles, UsersRound } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { CourseContentDialog, toLessonInput } from './course-content-dialog'
 import { getTeacherCourseDetail } from './teacher-course-repository'
 import { formatCount } from './teacher-format'
 import { TeacherCourseOutline } from './teacher-course-outline'
 import { useTeacherWorkspace } from './teacher-provider'
-import type { TeacherCourseDetail, TeacherDashboardData } from './types'
+import type {
+  CreateLessonInput,
+  CreateResourceInput,
+  TeacherCourseDetail,
+  TeacherDashboardData,
+  TeacherLessonResourceType,
+  UpdateCoursePatch,
+} from './types'
 
 const stageLabels = {
   lower_primary: '小学低年级',
@@ -23,27 +31,108 @@ const statusLabels = {
 
 export function TeacherCourseDetailPage() {
   const { courseId = '' } = useParams()
-  const { data, assignCourse } = useTeacherWorkspace()
-  const course = getTeacherCourseDetail(data, courseId)
+  const { data, assignCourse, canManage, loadCourse, createChapter, createLesson, createResource, updateCourse } =
+    useTeacherWorkspace()
+  const workspaceCourse = getTeacherCourseDetail(data, courseId)
+  const [outline, setOutline] = useState<TeacherCourseDetail | null>(null)
+  const [outlineFailed, setOutlineFailed] = useState(false)
 
-  if (!course) return <Navigate to="/teacher/courses" replace />
+  // 工作区只带课包摘要：大纲按需拉。演示源自带章节，不需要也不该去请求。
+  useEffect(() => {
+    if (!workspaceCourse || workspaceCourse.chapters.length > 0) return undefined
+    let cancelled = false
+    void loadCourse(courseId).then((loaded) => {
+      if (cancelled) return
+      // undefined = 该数据源没有大纲接口；null = 读失败（两者都不能当成"没有章节"）
+      if (loaded === undefined) return
+      if (loaded === null) setOutlineFailed(true)
+      else setOutline(loaded)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [courseId, workspaceCourse, loadCourse])
+
+  if (!workspaceCourse) return <Navigate to="/teacher/courses" replace />
+
+  const course = outline ?? workspaceCourse
 
   return (
-    <TeacherCourseDetailContent key={course.id} course={course} classes={data.classes} assignCourse={assignCourse} />
+    <TeacherCourseDetailContent
+      key={course.id}
+      course={course}
+      classes={data.classes}
+      assignCourse={assignCourse}
+      canManage={canManage}
+      outlineFailed={outlineFailed}
+      createChapter={createChapter}
+      createLesson={createLesson}
+      createResource={createResource}
+      updateCourse={updateCourse}
+    />
   )
 }
+
+type ContentCreateHandler = (input: {
+  title: string
+  durationMinutes?: number
+  objectives?: string[]
+  type?: TeacherLessonResourceType
+  status?: 'ready' | 'planned'
+}) => Promise<boolean>
 
 function TeacherCourseDetailContent({
   course,
   classes,
   assignCourse,
+  canManage,
+  outlineFailed,
+  createChapter,
+  createLesson,
+  createResource,
+  updateCourse,
 }: {
   course: TeacherCourseDetail
   classes: TeacherDashboardData['classes']
   assignCourse: (courseId: string, classIds: string[]) => void
+  canManage: boolean
+  outlineFailed: boolean
+  createChapter: (courseId: string, title: string) => Promise<boolean>
+  createLesson: (courseId: string, chapterId: string, input: CreateLessonInput) => Promise<boolean>
+  createResource: (
+    courseId: string,
+    chapterId: string,
+    lessonId: string,
+    input: CreateResourceInput,
+  ) => Promise<boolean>
+  updateCourse: (courseId: string, patch: UpdateCoursePatch) => Promise<boolean>
 }) {
   const [selectedClassIds, setSelectedClassIds] = useState(() => course.assignedClassIds)
   const [isSaved, setIsSaved] = useState(false)
+  const [dialog, setDialog] = useState<{ kind: 'chapter' | 'lesson' | 'resource'; chapterId?: string; lessonId?: string } | null>(
+    null,
+  )
+
+  const handleCreate: ContentCreateHandler = async (input) => {
+    if (!dialog) return false
+    if (dialog.kind === 'chapter') return createChapter(course.id, input.title)
+    if (dialog.kind === 'lesson' && dialog.chapterId) {
+      return createLesson(course.id, dialog.chapterId, toLessonInput(input))
+    }
+    if (dialog.kind === 'resource' && dialog.chapterId && dialog.lessonId) {
+      return createResource(course.id, dialog.chapterId, dialog.lessonId, {
+        title: input.title,
+        type: input.type ?? 'slides',
+        status: input.status ?? 'planned',
+      })
+    }
+    return false
+  }
+
+  const lessons = course.chapters.reduce((count, chapter) => count + chapter.lessons.length, 0)
+  // 一节课都没有的课包不该被"发布"：班级关联到它就会无课可开
+  const canPublish = lessons > 0 && course.status === 'draft'
+  const canUnpublish = course.status === 'ready'
 
   const toggleClass = (classId: string, isSelected: boolean) => {
     setIsSaved(false)
@@ -126,7 +215,53 @@ function TeacherCourseDetailContent({
               ))}
             </div>
           </article>
-          <TeacherCourseOutline courseId={course.id} chapters={course.chapters} />
+          {outlineFailed && (
+            <p className="rounded-2xl border border-amber-100 bg-amber-50 p-4 text-xs font-bold text-amber-800">
+              章节大纲读取失败，刷新后重试。这不代表这门课没有内容。
+            </p>
+          )}
+          {canManage && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div>
+                <p className="text-sm font-black text-slate-800">课程内容</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {lessons === 0
+                    ? '先加一节章节和课时；没有课时的课包不能发布。'
+                    : `已排 ${course.chapters.length} 章 / ${lessons} 课时。`}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  className="rounded-xl"
+                  onClick={() => setDialog({ kind: 'chapter' })}
+                >
+                  <Plus className="mr-1.5 h-4 w-4" />
+                  添加章节
+                </Button>
+                {canPublish && (
+                  <Button
+                    className="rounded-xl bg-[#3268b5] hover:bg-[#28589b]"
+                    onClick={() => void updateCourse(course.id, { status: 'ready' })}
+                  >
+                    发布课包
+                  </Button>
+                )}
+                {canUnpublish && (
+                  <Button variant="outline" className="rounded-xl" onClick={() => void updateCourse(course.id, { status: 'draft' })}>
+                    退回草稿
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+          <TeacherCourseOutline
+            courseId={course.id}
+            chapters={course.chapters}
+            canManage={canManage}
+            onAddLesson={(chapterId) => setDialog({ kind: 'lesson', chapterId })}
+            onAddResource={(chapterId, lessonId) => setDialog({ kind: 'resource', chapterId, lessonId })}
+          />
         </div>
 
         <aside className="space-y-6">
@@ -177,6 +312,14 @@ function TeacherCourseDetailContent({
           </section>
         </aside>
       </section>
+      {dialog && (
+        <CourseContentDialog
+          kind={dialog.kind}
+          open
+          onOpenChange={(open) => !open && setDialog(null)}
+          onCreate={handleCreate}
+        />
+      )}
     </main>
   )
 }
