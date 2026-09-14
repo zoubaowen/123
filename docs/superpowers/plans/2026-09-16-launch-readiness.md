@@ -60,7 +60,8 @@
 
 | 项 | 状态 | 说明 |
 | --- | --- | --- |
-| 代码远端 | ⛔ **本仓库没有 git remote** | 推送、PR、CI 都做不了；需要你给一个远端或指定别的交付方式 |
+| 代码远端 | 🔨 **已接上，但只能推快照** | 远端 `https://github.com/zoubaowen/123.git`。**直接推本仓库分支会被 GitHub 拒**：历史里 `deployment-package/` 下有 5 个 >100MB 的包（最大 204MB），GitHub 的 100MB 上限是硬性的，且**只看历史、不看当前代码**（这些包已经不在 HEAD 里了）。已用"当前源码快照 + 单次提交"推到分支 `teacher-course-management`（1105 个文件、27.7MB、无历史、无 >100MB 文件），可开 PR：`https://github.com/zoubaowen/123/pull/new/teacher-course-management` |
+| 历史清理（可选） | ⛔ 需要你决策 | 想推**完整历史**只有两条路，都会重写历史：① Git LFS 迁移那几个大包；② `git filter-repo` 把它们从历史里铲掉。**这会改写共享仓库的对象库（主检出与所有 worktree 都受影响），我不在没有你明确同意的情况下做** |
 | CI 流水线 | ⛔ 未接 | 本地门禁（全量测试 + type-check + lint + build）已全绿，可作为 CI 的现成脚本 |
 | deploy 桌面副本 | ✅ 已决策 | 教师端是 Web 功能，deploy 副本保持现状（只同步迁移与行类型） |
 

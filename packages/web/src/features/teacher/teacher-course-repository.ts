@@ -1,4 +1,5 @@
 import type {
+  CreateCourseInput,
   StartClassInput,
   TeacherCourseDetail,
   TeacherCourseLessonDetail,
@@ -6,6 +7,7 @@ import type {
   TeacherCourseStatus,
   TeacherCourseSummary,
   TeacherDashboardData,
+  UpdateCoursePatch,
 } from './types'
 
 export type TeacherCourseFilter = {
@@ -43,6 +45,39 @@ export function assignCourseToClasses(
   return {
     ...data,
     courses: data.courses.map((item) => (item.id === courseId ? { ...item, assignedClassIds } : item)),
+  }
+}
+
+/** 演示模式下新建课包：默认草稿，与后端一致。 */
+export function addTeacherCourse(data: TeacherDashboardData, input: CreateCourseInput): TeacherDashboardData {
+  const course: TeacherCourseDetail = {
+    id: `demo-course-${data.courses.length + 1}`,
+    title: input.title,
+    description: input.description ?? '',
+    coverAsset: '',
+    stage: input.stage,
+    topic: input.topic,
+    status: 'draft',
+    lessonCount: 0,
+    assignedClassIds: [],
+    ageRange: input.ageRange ?? '',
+    goals: input.goals ?? [],
+    expectedOutcome: input.expectedOutcome ?? '',
+    chapters: [],
+  }
+
+  return { ...data, courses: [...data.courses, course] }
+}
+
+/** 演示模式下编辑课包（含发布/退回）。 */
+export function updateTeacherCourse(
+  data: TeacherDashboardData,
+  courseId: string,
+  patch: UpdateCoursePatch,
+): TeacherDashboardData {
+  return {
+    ...data,
+    courses: data.courses.map((course) => (course.id === courseId ? { ...course, ...patch } : course)),
   }
 }
 

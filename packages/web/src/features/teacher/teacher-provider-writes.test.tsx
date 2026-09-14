@@ -100,6 +100,8 @@ function apiSource(writer: Partial<TeacherWorkspaceWriter> = {}, data: TeacherDa
     writer: {
       assignCourse: vi.fn(async () => ({ ok: true }) as TeacherWriteResult),
       createClass: vi.fn(async () => ({ ok: true }) as TeacherWriteResult),
+      createCourse: vi.fn(async () => ({ ok: true }) as TeacherWriteResult),
+      updateCourse: vi.fn(async () => ({ ok: true }) as TeacherWriteResult),
       addStudent: vi.fn(async () => ({ ok: true }) as TeacherWriteResult),
       removeStudent: vi.fn(async () => ({ ok: true }) as TeacherWriteResult),
       setClassBudget: vi.fn(async () => ({ ok: true }) as TeacherWriteResult),

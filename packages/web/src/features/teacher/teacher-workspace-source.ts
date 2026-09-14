@@ -4,6 +4,7 @@ import type {
   ActiveClassSettingsInput,
   ClassTeacherRole,
   CreateClassInput,
+  CreateCourseInput,
   InstitutionRole,
   StartClassInput,
   TeacherCapability,
@@ -11,6 +12,7 @@ import type {
   TeacherDashboardData,
   TeacherMemberOption,
   TeacherStudentOption,
+  UpdateCoursePatch,
 } from './types'
 
 export type TeacherWorkspaceLoad =
@@ -36,6 +38,10 @@ export interface TeacherWorkspaceWriter {
   assignCourse(classId: string, courseId: string): Promise<TeacherWriteResult>
   /** 新建班级（仅机构 owner/admin）。 */
   createClass(input: CreateClassInput): Promise<TeacherWriteResult>
+  /** 新建课包（仅机构 owner/admin）；后端默认存成草稿。 */
+  createCourse(input: CreateCourseInput): Promise<TeacherWriteResult>
+  /** 编辑课包，含 `draft ⇄ ready` 发布/退回。 */
+  updateCourse(courseId: string, patch: UpdateCoursePatch): Promise<TeacherWriteResult>
   /** 按用户 id 加入学生（仅机构 owner/admin）。 */
   addStudent(classId: string, studentUserId: string): Promise<TeacherWriteResult>
   /** 移出学生：后端写退班标记而不是删除记录（仅机构 owner/admin）。 */
@@ -319,6 +325,23 @@ export function createApiTeacherWorkspaceSource(): TeacherWorkspaceSource {
       async createClass(input) {
         try {
           await api.post('/api/teacher/classes', { name: input.name, aiUsageMode: input.aiUsageMode })
+          return { ok: true }
+        } catch {
+          return { ok: false, message: TEACHER_WRITE_FAILED }
+        }
+      },
+      async createCourse(input) {
+        try {
+          // 后端固定建为草稿：加好章节与课时后再发布
+          await api.post('/api/teacher/courses', input)
+          return { ok: true }
+        } catch {
+          return { ok: false, message: TEACHER_WRITE_FAILED }
+        }
+      },
+      async updateCourse(courseId, patch) {
+        try {
+          await api.patch(`/api/teacher/courses/${courseId}`, patch)
           return { ok: true }
         } catch {
           return { ok: false, message: TEACHER_WRITE_FAILED }

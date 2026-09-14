@@ -105,6 +105,29 @@ export interface CreateClassInput {
   aiUsageMode: ClassAiUsageMode
 }
 
+/** 新建课包的入参：后端 `POST /api/teacher/courses`。 */
+export interface CreateCourseInput {
+  title: string
+  stage: TeacherCourseStage
+  topic: string
+  description?: string
+  ageRange?: string
+  expectedOutcome?: string
+  goals?: string[]
+}
+
+/** 课包可改字段：含 `draft ⇄ ready` 发布与退回。 */
+export interface UpdateCoursePatch {
+  title?: string
+  stage?: TeacherCourseStage
+  status?: TeacherCourseStatus
+  topic?: string
+  description?: string
+  ageRange?: string
+  expectedOutcome?: string
+  goals?: string[]
+}
+
 export interface TeacherLesson {
   id: string
   title: string

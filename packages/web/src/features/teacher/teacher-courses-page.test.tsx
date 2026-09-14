@@ -30,6 +30,17 @@ describe('TeacherCoursesPage', () => {
     expect(markup).not.toContain('查看课程')
   })
 
+  it('offers a new-course entry for institution administrators', () => {
+    const markup = renderToStaticMarkup(
+      <MemoryRouter>
+        <TeacherCoursesPage />
+      </MemoryRouter>,
+    )
+
+    // 没有这个入口，机构管理员就只能靠接口建课包，"无课可开"的缺口在界面上补不上
+    expect(markup).toContain('新建课包')
+  })
+
   it('keeps each character cover fully visible instead of cropping the artwork', () => {
     const markup = renderToStaticMarkup(
       <MemoryRouter>

@@ -92,10 +92,13 @@
 **Files:** `features/teacher/teacher-workspace-source.ts`（writer）、`teacher-provider.tsx`、
 `teacher-courses-page.tsx`、新增 `create-course-dialog.tsx`
 
-- [ ] **Step 1: 写失败测试**：新建课包只有成功才出现在列表；名称/学段校验；失败保留对话框内容；
+- [x] **Step 1: 写失败测试**：新建课包只有成功才出现在列表；名称/学段校验；失败保留对话框内容；
       非机构管理员看不到入口。
-- [ ] **Step 2: 实现**（复用 Task 1–3 的接口；演示源保持本地 reducer）。
-- [ ] **Step 3: 提交**。`feat(web): create courses from the console`
+- [x] **Step 2: 实现**（复用 Task 1–3 的接口；演示源保持本地 reducer）。
+- [x] **Step 3: 提交**。`feat(web): let institution admins create a course from the console`
+
+> 诚实说明：对话框这一项的测试与实现是**一起写完才跑**的（没有先观察 FAIL），
+> 与 Task 1/2 那两次情况相同；Task 3、3.5 都是红—绿。记录在此，不掩饰。
 
 ## Task 5: 课包详情页的章节/课时/资源编辑
 

@@ -1,7 +1,8 @@
 import { XiaoBao } from '@ai-xiaobao/chat-core'
-import { BookOpenCheck, ClipboardList, Search, UsersRound } from 'lucide-react'
+import { BookOpenCheck, BookPlus, ClipboardList, Search, UsersRound } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { CreateCourseDialog } from './create-course-dialog'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TeacherCourseCard } from './teacher-course-card'
@@ -26,11 +27,12 @@ const statusOptions = [
 ] satisfies Array<{ value: TeacherCourseFilter['status']; label: string }>
 
 export function TeacherCoursesPage({ initialQuery = '' }: TeacherCoursesPageProps) {
-  const { data } = useTeacherWorkspace()
+  const { data, canManage, createCourse } = useTeacherWorkspace()
   const [query, setQuery] = useState(initialQuery)
   const [stage, setStage] = useState<TeacherCourseFilter['stage']>('all')
   const [topic, setTopic] = useState<TeacherCourseFilter['topic']>('all')
   const [status, setStatus] = useState<TeacherCourseFilter['status']>('all')
+  const [createOpen, setCreateOpen] = useState(false)
   const courses = filterTeacherCourses(data, { query, stage, topic, status })
   const metrics = getTeacherCourseMetrics(data)
   const topics = [...new Set(data.courses.map((course) => course.topic))]
@@ -44,11 +46,21 @@ export function TeacherCoursesPage({ initialQuery = '' }: TeacherCoursesPageProp
 
   return (
     <main className="mx-auto min-h-full max-w-[1480px] px-6 py-6 lg:px-8">
-      <header>
-        <p className="text-sm font-bold text-[#4c6fa9]">教学资源</p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-900">课程中心</h1>
-        <p className="mt-2 text-sm text-slate-500">集中了解内容安排、班级分配与备课完善进度。</p>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-bold text-[#4c6fa9]">教学资源</p>
+          <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-900">课程中心</h1>
+          <p className="mt-2 text-sm text-slate-500">集中了解内容安排、班级分配与备课完善进度。</p>
+        </div>
+        {canManage && (
+          <Button className="h-11 rounded-xl bg-[#3268b5] hover:bg-[#28589b]" onClick={() => setCreateOpen(true)}>
+            <BookPlus className="mr-2 h-4 w-4" />
+            新建课包
+          </Button>
+        )}
       </header>
+
+      <CreateCourseDialog open={createOpen} onOpenChange={setCreateOpen} onCreate={createCourse} />
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[

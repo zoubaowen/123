@@ -10,7 +10,7 @@ import {
   removeClassTeacher,
   setTeacherClassBudget,
 } from './teacher-class-repository'
-import { assignCourseToClasses } from './teacher-course-repository'
+import { assignCourseToClasses, addTeacherCourse, updateTeacherCourse } from './teacher-course-repository'
 import { reviewTeacherWork, toggleFeaturedTeacherWork } from './teacher-work-repository'
 import { updateTeacherStudentStatus } from './teacher-student-repository'
 import { endClass, startClass, updateActiveClassSettings } from './teacher-store'
@@ -26,12 +26,14 @@ import type {
   ActiveClassSettingsInput,
   ClassTeacherRole,
   CreateClassInput,
+  CreateCourseInput,
   StartClassInput,
   TeacherDashboardData,
   TeacherMemberOption,
   TeacherStudentLearningStatus,
   TeacherStudentOption,
   TeacherWorkReviewInput,
+  UpdateCoursePatch,
 } from './types'
 
 interface TeacherWorkspaceContextValue {
@@ -43,6 +45,8 @@ interface TeacherWorkspaceContextValue {
   updateActiveSettings: (input: ActiveClassSettingsInput) => void
   assignCourse: (courseId: string, classIds: string[]) => void
   createClass: (input: CreateClassInput) => Promise<boolean>
+  createCourse: (input: CreateCourseInput) => Promise<boolean>
+  updateCourse: (courseId: string, patch: UpdateCoursePatch) => Promise<boolean>
   addStudent: (classId: string, studentUserId: string) => Promise<boolean>
   removeStudent: (classId: string, studentUserId: string) => Promise<boolean>
   setClassBudget: (classId: string, creditLimit: number | null) => Promise<boolean>
@@ -73,6 +77,8 @@ const defaultValue: TeacherWorkspaceContextValue = {
   updateActiveSettings: () => undefined,
   assignCourse: () => undefined,
   createClass: async () => false,
+  createCourse: async () => false,
+  updateCourse: async () => false,
   addStudent: async () => false,
   removeStudent: async () => false,
   setClassBudget: async () => false,
@@ -291,6 +297,16 @@ export function TeacherWorkspaceProvider({
       createClass: async (input: CreateClassInput) => {
         if (apiWriter) return writeThenReloadAwaitable(() => apiWriter.createClass(input))
         applyLocally((current) => addTeacherClass(current, input))
+        return true
+      },
+      createCourse: async (input: CreateCourseInput) => {
+        if (apiWriter) return writeThenReloadAwaitable(() => apiWriter.createCourse(input))
+        applyLocally((current) => addTeacherCourse(current, input))
+        return true
+      },
+      updateCourse: async (courseId: string, patch: UpdateCoursePatch) => {
+        if (apiWriter) return writeThenReloadAwaitable(() => apiWriter.updateCourse(courseId, patch))
+        applyLocally((current) => updateTeacherCourse(current, courseId, patch))
         return true
       },
       addStudent: async (classId: string, studentUserId: string) => {
