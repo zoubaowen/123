@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#10251f" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>AI小宝学院 - 青少年 AI 编程创作伙伴</title>
+    <script>
+      try {
+        document.documentElement.style.backgroundColor = '#10251f'
+        document.documentElement.style.colorScheme = 'dark'
+      } catch {}
+    </script>
+    <style>
+      #splash-root {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 50% 30%, rgba(94, 234, 212, 0.24), transparent 24%),
+          radial-gradient(circle at 82% 22%, rgba(253, 230, 138, 0.2), transparent 24%),
+          radial-gradient(circle at 16% 72%, rgba(251, 146, 60, 0.18), transparent 28%),
+          linear-gradient(140deg, #10251f 0%, #153126 42%, #26324a 100%);
+        color: #fff;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+      #splash-root::before {
+        content: '';
+        position: absolute;
+        width: 440px;
+        height: 440px;
+        border: 1px solid rgba(207, 250, 254, 0.12);
+        border-radius: 999px;
+      }
+      #splash-root::after {
+        content: '';
+        position: absolute;
+        width: 310px;
+        height: 310px;
+        border: 1px dashed rgba(253, 230, 138, 0.25);
+        border-radius: 999px;
+        animation: splash-spin 18s linear infinite;
+      }
+      #splash-root .classroom-board {
+        position: absolute;
+        left: 8%;
+        top: 18%;
+        width: 288px;
+        height: 192px;
+        border: 1px solid rgba(167, 243, 208, 0.1);
+        border-radius: 32px;
+        background: rgba(6, 78, 59, 0.2);
+        filter: blur(1px);
+      }
+      #splash-root .window-glow {
+        position: absolute;
+        right: 8%;
+        top: 16%;
+        width: 96px;
+        height: 144px;
+        border-radius: 28px;
+        background: rgba(254, 243, 199, 0.2);
+        filter: blur(18px);
+      }
+      #splash-root .floor-glow {
+        position: absolute;
+        bottom: 10%;
+        width: 520px;
+        height: 96px;
+        border-radius: 999px;
+        background: rgba(254, 243, 199, 0.2);
+        filter: blur(42px);
+      }
+      #splash-root .splash-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 32px;
+        text-align: center;
+      }
+      #splash-root .splash-xiaobao-wrap {
+        position: relative;
+      }
+      #splash-root .splash-xiaobao-wrap::before {
+        content: '★';
+        position: absolute;
+        left: -34px;
+        top: 36px;
+        color: rgba(254, 243, 199, 0.86);
+        font-size: 22px;
+      }
+      #splash-root .splash-xiaobao-wrap::after {
+        content: '{ }';
+        position: absolute;
+        left: 22px;
+        bottom: 6px;
+        color: rgba(209, 250, 229, 0.78);
+        font-size: 14px;
+        font-weight: 800;
+      }
+      #splash-root .splash-xiaobao {
+        width: 188px;
+        height: 188px;
+        filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.28));
+        animation: splash-float 3.2s ease-in-out infinite;
+      }
+      #splash-root .splash-title {
+        margin-top: 26px;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+      #splash-root .splash-subtitle {
+        margin-top: 8px;
+        font-size: 14px;
+        color: rgba(236, 254, 255, 0.78);
+      }
+      #splash-root .splash-loader {
+        margin-top: 28px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #splash-root .splash-bar {
+        width: 36px;
+        height: 8px;
+        border-radius: 999px;
+        background: #67e8f9;
+        box-shadow: 0 0 18px rgba(103, 232, 249, 0.8);
+        animation: splash-pulse 1.35s ease-in-out infinite;
+      }
+      #splash-root .splash-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        animation: splash-dot 1.35s ease-in-out infinite;
+      }
+      #splash-root .splash-dot:nth-child(2) {
+        background: #fef3c7;
+        animation-delay: 120ms;
+      }
+      #splash-root .splash-dot:nth-child(3) {
+        background: #fdba74;
+        animation-delay: 240ms;
+      }
+      #splash-root .splash-tip {
+        min-height: 18px;
+        margin-top: 18px;
+        font-size: 12px;
+        color: rgba(236, 254, 255, 0.58);
+      }
+      #splash-root.splash-done {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease-out;
+      }
+      @keyframes splash-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes splash-float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-9px);
+        }
+      }
+      @keyframes splash-pulse {
+        0%,
+        100% {
+          opacity: 0.52;
+          transform: scaleX(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scaleX(1.12);
+        }
+      }
+      @keyframes splash-dot {
+        0%,
+        100% {
+          opacity: 0.42;
+          transform: translateY(0);
+        }
+        45% {
+          opacity: 1;
+          transform: translateY(-7px);
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/src/main.tsx"></script>
+  </head>
+  <body>
+    <div id="splash-root">
+      <div class="classroom-board"></div>
+      <div class="window-glow"></div>
+      <div class="floor-glow"></div>
+      <div class="splash-inner">
+        <div class="splash-xiaobao-wrap">
+          <img class="splash-xiaobao" src="/xiaobao/xiaobao-coding.png" alt="小宝正在启动创作空间" />
+          <!--
+          <svg class="splash-xiaobao" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <radialGradient id="sp-glow" cx="50%" cy="44%" r="62%">
+                <stop offset="0%" stop-color="#67e8f9" stop-opacity="0.44" />
+                <stop offset="56%" stop-color="#a7f3d0" stop-opacity="0.16" />
+                <stop offset="100%" stop-color="#a7f3d0" stop-opacity="0" />
+              </radialGradient>
+              <radialGradient id="sp-plush" cx="38%" cy="22%" r="76%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="54%" stop-color="#fff7ed" />
+                <stop offset="100%" stop-color="#f4e9d8" />
+              </radialGradient>
+              <linearGradient id="sp-face" x1="44" y1="45" x2="118" y2="98" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#ddfcf2" />
+                <stop offset="52%" stop-color="#a7f3d0" />
+                <stop offset="100%" stop-color="#5eead4" />
+              </linearGradient>
+              <linearGradient id="sp-trim" x1="40" y1="42" x2="128" y2="120" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#fed7aa" />
+                <stop offset="100%" stop-color="#fb923c" />
+              </linearGradient>
+              <radialGradient id="sp-eye" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#e0f7ff" />
+                <stop offset="42%" stop-color="#06b6d4" />
+                <stop offset="100%" stop-color="#075985" />
+              </radialGradient>
+            </defs>
+            <circle cx="80" cy="82" r="74" fill="url(#sp-glow)" />
+            <path d="M19 89C34 52 99 26 139 61" stroke="#67e8f9" stroke-width="2.6" stroke-linecap="round" opacity="0.85" />
+            <path d="M25 108C55 136 122 125 140 78" stroke="#fef3c7" stroke-width="2.2" stroke-linecap="round" opacity="0.85" />
+            <path d="M80 34V20" stroke="#9ca3af" stroke-width="4" stroke-linecap="round" />
+            <circle cx="80" cy="35" r="8.5" fill="#a7f3d0" />
+            <polygon points="80,6 83.1,13.9 91,14.6 84.5,19.1 86.4,28 80,22.7 73.6,28 75.5,19.1 69,14.6 76.9,13.9" fill="#fff7ed" />
+            <ellipse cx="33" cy="77" rx="12" ry="19" fill="#a7f3d0" />
+            <ellipse cx="127" cy="77" rx="12" ry="19" fill="#a7f3d0" />
+            <ellipse cx="33" cy="77" rx="7" ry="13" fill="url(#sp-trim)" />
+            <ellipse cx="127" cy="77" rx="7" ry="13" fill="url(#sp-trim)" />
+            <path d="M31 86C31 52 51 35 80 35C109 35 129 52 129 86C129 122 109 143 80 143C51 143 31 122 31 86Z" fill="url(#sp-plush)" />
+            <path d="M41 77C41 53 58 43 80 43C102 43 119 53 119 77C119 99 104 111 80 111C56 111 41 99 41 77Z" fill="url(#sp-trim)" />
+            <path d="M47 76C47 58 61 50 80 50C99 50 113 58 113 76C113 93 100 102 80 102C60 102 47 93 47 76Z" fill="url(#sp-face)" />
+            <path d="M55 54C66 47 96 47 106 55" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.55" />
+            <ellipse cx="62" cy="73" rx="10" ry="11" fill="url(#sp-eye)" />
+            <ellipse cx="98" cy="73" rx="10" ry="11" fill="url(#sp-eye)" />
+            <ellipse cx="62" cy="72" rx="8" ry="8.5" fill="#082f49" />
+            <ellipse cx="98" cy="72" rx="8" ry="8.5" fill="#082f49" />
+            <circle cx="65" cy="68.5" r="2.6" fill="#fff" />
+            <circle cx="101" cy="68.5" r="2.6" fill="#fff" />
+            <circle cx="54" cy="87" r="6" fill="#f472b6" opacity="0.38" />
+            <circle cx="106" cy="87" r="6" fill="#f472b6" opacity="0.38" />
+            <path d="M69 89C75 99 86 99 92 89" stroke="#0e7490" stroke-width="4.5" stroke-linecap="round" fill="none" />
+            <path d="M56 112C62 121 70 126 80 126C90 126 98 121 104 112" stroke="url(#sp-trim)" stroke-width="5.5" stroke-linecap="round" />
+            <path d="M66 113C69 107 73 104 80 104C87 104 91 107 94 113C92 123 87 130 80 130C73 130 68 123 66 113Z" fill="#a7f3d0" stroke="url(#sp-trim)" stroke-width="3" />
+            <path d="M31 99C18 103 13 91 22 81" stroke="#f8ebdd" stroke-width="13" stroke-linecap="round" />
+            <path d="M129 99C142 103 147 91 138 81" stroke="#f8ebdd" stroke-width="13" stroke-linecap="round" />
+            <circle cx="22" cy="81" r="5.5" fill="#f8ebdd" />
+            <circle cx="138" cy="81" r="5.5" fill="#f8ebdd" />
+          </svg>
+          -->
+        </div>
+        <div class="splash-title">AI小宝学院</div>
+        <div class="splash-subtitle">青少年 AI 编程创作伙伴</div>
+        <div class="splash-loader">
+          <div class="splash-bar"></div>
+          <div class="splash-dot"></div>
+          <div class="splash-dot"></div>
+        </div>
+        <div class="splash-tip" id="splash-tip">小宝正在启动星光创作空间...</div>
+      </div>
+    </div>
+    <div id="root"></div>
+    <script>
+      var tips = [
+        '小宝正在启动星光创作空间...',
+        '正在连接 AI 学习伙伴...',
+        '正在准备代码、动画、音乐和游戏工具...',
+        '准备好一起把好点子变成作品啦...',
+      ]
+      var i = 0
+      setInterval(function () {
+        i = (i + 1) % tips.length
+        var el = document.getElementById('splash-tip')
+        if (el) el.textContent = tips[i]
+      }, 2600)
+    </script>
+  </body>
+</html>

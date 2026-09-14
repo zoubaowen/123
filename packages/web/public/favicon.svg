@@ -1,0 +1,89 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#E8F5F0" />
+      <stop offset="55%" stop-color="#E8EDF5" />
+      <stop offset="100%" stop-color="#D4E4F7" />
+    </radialGradient>
+    <radialGradient id="plush" cx="38%" cy="20%" r="78%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="54%" stop-color="#FFF7ED" />
+      <stop offset="100%" stop-color="#F4E9D8" />
+    </radialGradient>
+    <linearGradient id="face" x1="138" y1="170" x2="374" y2="326" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#DDFCF2" />
+      <stop offset="52%" stop-color="#A7F3D0" />
+      <stop offset="100%" stop-color="#5EEAD4" />
+    </linearGradient>
+    <linearGradient id="trim" x1="122" y1="150" x2="398" y2="402" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FED7AA" />
+      <stop offset="100%" stop-color="#FB923C" />
+    </linearGradient>
+    <radialGradient id="eye" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E0F7FF" />
+      <stop offset="42%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#075985" />
+    </radialGradient>
+    <linearGradient id="outline" x1="100" y1="100" x2="400" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5EEAD4" />
+      <stop offset="100%" stop-color="#0D9488" />
+    </linearGradient>
+    <linearGradient id="wing" x1="50" y1="100" x2="130" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#A7F3D0" />
+      <stop offset="100%" stop-color="#6EE7B7" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)" />
+  <path d="M68 284C110 166 318 94 442 204" stroke="#67E8F9" stroke-width="14" stroke-linecap="round" opacity="0.78" />
+  <!-- Left wing -->
+  <path d="M58 220C30 185 22 148 48 128C62 118 80 134 86 162L92 210" fill="url(#wing)" stroke="#A7F3D0" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M42 170C54 154 72 148 84 162" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.5" />
+  <!-- Right wing -->
+  <path d="M454 220C482 185 490 148 464 128C450 118 432 134 426 162L420 210" fill="url(#wing)" stroke="#A7F3D0" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M470 170C458 154 440 148 428 162" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.5" />
+  <!-- Antenna -->
+  <path d="M256 126V78" stroke="#9CA3AF" stroke-width="16" stroke-linecap="round" />
+  <circle cx="256" cy="132" r="28" fill="#A7F3D0" stroke="#0D9488" stroke-width="10" />
+  <polygon points="256,22 268,54 300,58 276,80 284,112 256,92 228,112 236,80 212,58 244,54" fill="#FFF7ED" stroke="#FDE68A" stroke-width="10" stroke-linejoin="round" />
+  <!-- Ears / side flaps -->
+  <ellipse cx="108" cy="258" rx="38" ry="62" fill="#A7F3D0" />
+  <ellipse cx="404" cy="258" rx="38" ry="62" fill="#A7F3D0" />
+  <ellipse cx="108" cy="258" rx="24" ry="42" fill="url(#trim)" />
+  <ellipse cx="404" cy="258" rx="24" ry="42" fill="url(#trim)" />
+  <!-- Body outline -->
+  <path d="M96 284C96 172 160 118 256 118C352 118 416 172 416 284C416 392 352 454 256 454C160 454 96 392 96 284Z" fill="url(#plush)" stroke="url(#outline)" stroke-width="18" stroke-linejoin="round" />
+  <!-- Inner body -->
+  <path d="M124 256C124 174 182 144 256 144C330 144 388 174 388 256C388 328 332 364 256 364C180 364 124 328 124 256Z" fill="url(#trim)" />
+  <!-- Face -->
+  <path d="M146 252C146 194 192 168 256 168C320 168 366 194 366 252C366 308 322 338 256 338C190 338 146 308 146 252Z" fill="url(#face)" />
+  <!-- Forehead highlight -->
+  <path d="M172 172C200 160 312 160 340 172" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" opacity="0.55" />
+  <path d="M322 180L350 180" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" opacity="0.65" />
+  <!-- Eyes - bigger and bolder -->
+  <ellipse cx="196" cy="244" rx="42" ry="46" fill="url(#eye)" opacity="0.9" />
+  <ellipse cx="316" cy="244" rx="42" ry="46" fill="url(#eye)" opacity="0.9" />
+  <ellipse cx="196" cy="242" rx="32" ry="36" fill="#082F49" />
+  <ellipse cx="316" cy="242" rx="32" ry="36" fill="#082F49" />
+  <circle cx="210" cy="228" r="12" fill="#FFFFFF" />
+  <circle cx="330" cy="228" r="12" fill="#FFFFFF" />
+  <circle cx="184" cy="254" r="6" fill="#A5F3FC" opacity="0.8" />
+  <circle cx="304" cy="254" r="6" fill="#A5F3FC" opacity="0.8" />
+  <!-- Cheeks -->
+  <circle cx="164" cy="278" r="20" fill="#FDBA74" opacity="0.4" />
+  <circle cx="348" cy="278" r="20" fill="#FDBA74" opacity="0.4" />
+  <!-- Mouth -->
+  <path d="M212 304C230 336 282 336 300 304" stroke="#0E7490" stroke-width="16" stroke-linecap="round" />
+  <!-- Belly -->
+  <path d="M180 352C192 370 220 380 256 380C292 380 320 370 332 352" stroke="url(#trim)" stroke-width="18" stroke-linecap="round" />
+  <path d="M210 356C222 338 238 330 256 330C274 330 290 338 302 356C298 382 280 398 256 398C232 398 214 382 210 356Z" fill="url(#face)" stroke="url(#trim)" stroke-width="10" />
+  <!-- Arms -->
+  <path d="M96 310C68 320 52 290 72 262" stroke="#F8EBDD" stroke-width="42" stroke-linecap="round" />
+  <path d="M416 310C444 320 460 290 440 262" stroke="#F8EBDD" stroke-width="42" stroke-linecap="round" />
+  <circle cx="72" cy="262" r="18" fill="#F8EBDD" />
+  <circle cx="440" cy="262" r="18" fill="#F8EBDD" />
+  <!-- Feet -->
+  <path d="M180 430C196 458 228 462 244 430" stroke="#F8EBDD" stroke-width="36" stroke-linecap="round" />
+  <path d="M268 430C284 462 316 458 332 430" stroke="#F8EBDD" stroke-width="36" stroke-linecap="round" />
+  <path d="M192 446C210 460 228 458 244 438" stroke="url(#trim)" stroke-width="14" stroke-linecap="round" />
+  <path d="M268 438C284 458 302 460 320 446" stroke="url(#trim)" stroke-width="14" stroke-linecap="round" />
+</svg>

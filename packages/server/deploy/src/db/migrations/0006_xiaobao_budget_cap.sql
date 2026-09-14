@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `xiaobao_credit_limit` integer;

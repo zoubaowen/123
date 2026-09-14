@@ -1,0 +1,953 @@
+// ─── Data Types ─────────────────────────────────────────────────────────────
+
+export interface User {
+  id: string
+  provider: string
+  externalId: string
+  accessToken: string
+  refreshToken: string | null
+  scope: string | null
+  username: string
+  email: string | null
+  name: string | null
+  avatarUrl: string | null
+  role: string // 'user' | 'admin'
+  status: string // 'active' | 'disabled'
+  disabledReason: string | null
+  disabledAt: number | null
+  disabledBy: string | null
+  apiKey: string | null // Encrypted server API key
+  phone: string | null
+  phoneVerified: boolean | null
+  /** Per-student XiaoBao credit cap; null means no cap is configured for this student. */
+  xiaobaoCreditLimit: number | null
+  createdAt: number
+  updatedAt: number
+  lastLoginAt: number
+}
+
+export interface LocalCredential {
+  userId: string
+  passwordHash: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface Task {
+  id: string
+  userId: string
+  prompt: string
+  title: string | null
+  repoUrl: string | null
+  envId: string | null // CloudBase env ID resolved at creation from provision mode
+  selectedAgent: string | null
+  selectedModel: string | null
+  selectedRuntime: string | null
+  xiaobaoCapability: string | null
+  mode: string
+  installDependencies: boolean | null
+  maxDuration: number | null
+  keepAlive: boolean | null
+  enableBrowser: boolean | null
+  status: string
+  progress: number | null
+  logs: string | null
+  error: string | null
+  branchName: string | null
+  sandboxId: string | null
+  sandboxSessionId: string | null
+  sandboxCwd: string | null
+  sandboxMode: string | null
+  agentSessionId: string | null
+  sandboxUrl: string | null
+  previewUrl: string | null
+  prUrl: string | null
+  prNumber: number | null
+  prStatus: string | null
+  prMergeCommitSha: string | null
+  mcpServerList: string | null
+  skillSettings: string | null // JSON string of { initialized: boolean; skillList: string[] }
+  createdAt: number
+  updatedAt: number
+  completedAt: number | null
+  deletedAt: number | null
+  personalGitInfo: string | null
+}
+
+export interface Connector {
+  id: string
+  userId: string
+  name: string
+  description: string | null
+  type: string
+  baseUrl: string | null
+  oauthClientId: string | null
+  oauthClientSecret: string | null
+  command: string | null
+  args: string | null
+  env: string | null
+  headers: string | null
+  status: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface MiniProgramApp {
+  id: string
+  userId: string
+  name: string
+  appId: string
+  privateKey: string
+  description: string | null
+  createdAt: number
+  updatedAt: number
+}
+
+export interface CronTask {
+  id: string
+  userId: string
+  name: string
+  prompt: string
+  cronExpression: string
+  enabled: boolean
+  repoUrl: string | null
+  selectedAgent: string | null
+  selectedModel: string | null
+  lastRunAt: number | null
+  nextRunAt: number | null
+  lockedBy: string | null
+  lockedAt: number | null
+  createdAt: number
+  updatedAt: number
+}
+
+export interface Account {
+  id: string
+  userId: string
+  provider: string
+  externalUserId: string
+  accessToken: string
+  refreshToken: string | null
+  expiresAt: number | null
+  scope: string | null
+  username: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface Key {
+  id: string
+  userId: string
+  provider: string
+  value: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface UserResource {
+  id: string
+  userId: string
+  scope: string // 'user' | 'task'
+  taskId: string | null // set when scope='task'
+  status: string
+  envId: string | null
+  envAlias: string | null
+  envRegion: string | null
+  cosTagValue: string | null
+  policyHash: string | null
+  camUsername: string | null
+  camSecretId: string | null
+  camSecretKey: string | null
+  policyId: number | null
+  failStep: string | null
+  failReason: string | null
+  createdAt: number
+  updatedAt: number
+}
+
+export interface Setting {
+  id: string
+  userId: string | null // null = system-level setting
+  key: string
+  value: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface Deployment {
+  id: string
+  taskId: string
+  type: string
+  url: string | null
+  path: string | null
+  qrCodeUrl: string | null
+  pagePath: string | null
+  appId: string | null
+  label: string | null
+  metadata: string | null
+  createdAt: number
+  updatedAt: number
+  deletedAt: number | null
+}
+
+export interface AdminLog {
+  id: string
+  adminUserId: string
+  action: string
+  targetUserId: string | null
+  details: string | null
+  ipAddress: string | null
+  userAgent: string | null
+  createdAt: number
+}
+
+export interface UserCredits {
+  id: string
+  userId: string
+  balance: number
+  frozenBalance: number
+  lifetimeBalance: number
+  createdAt: number
+  updatedAt: number
+}
+
+export interface CreditTransaction {
+  id: string
+  userId: string
+  type: string
+  amount: number
+  balanceAfter: number
+  description: string | null
+  metadata: string | null
+  createdAt: number
+}
+
+export interface SubscriptionPlan {
+  id: string
+  name: string
+  description: string | null
+  type: string
+  creditsPerPeriod: number
+  periodDays: number
+  priceCents: number
+  maxTasksPerDay: number | null
+  maxSandboxDuration: number | null
+  features: string | null
+  active: boolean
+  sortOrder: number
+  createdAt: number
+  updatedAt: number
+}
+
+export interface UserSubscription {
+  id: string
+  userId: string
+  planId: string
+  status: string
+  currentPeriodStart: number
+  currentPeriodEnd: number
+  autoRenew: boolean
+  cancelledAt: number | null
+  createdAt: number
+  updatedAt: number
+}
+
+export interface DailyUsage {
+  id: string
+  userId: string
+  date: string
+  taskCount: number
+  sandboxDuration: number
+  creditsConsumed: number
+  createdAt: number
+  updatedAt: number
+}
+
+// ─── Creation Types (omit auto-generated timestamps) ────────────────────────
+
+/** Fields that default to null when creating a User */
+type UserNullableFields =
+  | 'refreshToken'
+  | 'scope'
+  | 'email'
+  | 'name'
+  | 'avatarUrl'
+  | 'disabledReason'
+  | 'disabledAt'
+  | 'disabledBy'
+  | 'apiKey'
+  | 'phone'
+  | 'phoneVerified'
+  | 'xiaobaoCreditLimit'
+
+export type NewUser = Omit<User, 'createdAt' | 'updatedAt' | 'lastLoginAt' | UserNullableFields> &
+  Partial<Pick<User, UserNullableFields>> & {
+    createdAt?: number
+    updatedAt?: number
+    lastLoginAt?: number
+  }
+
+export type NewLocalCredential = Omit<LocalCredential, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+/** Fields that default to null when creating a Task */
+type TaskNullableFields =
+  | 'title'
+  | 'repoUrl'
+  | 'envId'
+  | 'selectedAgent'
+  | 'selectedModel'
+  | 'selectedRuntime'
+  | 'xiaobaoCapability'
+  | 'installDependencies'
+  | 'maxDuration'
+  | 'keepAlive'
+  | 'enableBrowser'
+  | 'progress'
+  | 'logs'
+  | 'error'
+  | 'branchName'
+  | 'sandboxId'
+  | 'sandboxSessionId'
+  | 'sandboxCwd'
+  | 'sandboxMode'
+  | 'agentSessionId'
+  | 'sandboxUrl'
+  | 'previewUrl'
+  | 'prUrl'
+  | 'prNumber'
+  | 'prStatus'
+  | 'prMergeCommitSha'
+  | 'mcpServerList'
+  | 'skillSettings'
+
+export type NewTask = Omit<Task, 'createdAt' | 'updatedAt' | 'completedAt' | 'deletedAt' | TaskNullableFields> &
+  Partial<Pick<Task, TaskNullableFields>> & {
+    createdAt?: number
+    updatedAt?: number
+    completedAt?: number | null
+    deletedAt?: number | null
+  }
+
+export type NewConnector = Omit<Connector, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export type NewMiniProgramApp = Omit<MiniProgramApp, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+/** Fields that default to null when creating a CronTask */
+type CronTaskNullableFields =
+  | 'repoUrl'
+  | 'selectedAgent'
+  | 'selectedModel'
+  | 'lastRunAt'
+  | 'nextRunAt'
+  | 'lockedBy'
+  | 'lockedAt'
+
+export type NewCronTask = Omit<CronTask, 'createdAt' | 'updatedAt' | CronTaskNullableFields> &
+  Partial<Pick<CronTask, CronTaskNullableFields>> & {
+    createdAt?: number
+    updatedAt?: number
+  }
+
+export type NewAccount = Omit<Account, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export type NewKey = Omit<Key, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export type NewUserResource = Omit<UserResource, 'createdAt' | 'updatedAt' | 'scope' | 'taskId'> & {
+  scope?: string // defaults to 'user'
+  taskId?: string | null
+  createdAt?: number
+  updatedAt?: number
+}
+
+export type NewSetting = Omit<Setting, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export type NewDeployment = Omit<Deployment, 'createdAt' | 'updatedAt' | 'deletedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+  deletedAt?: number | null
+}
+
+export type NewAdminLog = Omit<AdminLog, 'createdAt'> & {
+  createdAt?: number
+}
+
+export interface SmsCode {
+  id: string
+  phone: string
+  code: string
+  expiresAt: number
+  used: boolean
+  createdAt: number
+}
+
+export type NewSmsCode = Omit<SmsCode, 'createdAt'> & { createdAt?: number }
+
+export interface UserCredits {
+  id: string
+  userId: string
+  balance: number
+  frozenBalance: number
+  lifetimeBalance: number
+  createdAt: number
+  updatedAt: number
+}
+
+export type NewUserCredits = Omit<UserCredits, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export interface CreditTransaction {
+  id: string
+  userId: string
+  type: string
+  amount: number
+  balanceAfter: number
+  description: string | null
+  metadata: string | null
+  createdAt: number
+}
+
+export interface NewCreditTransaction {
+  id?: string
+  userId: string
+  type: string
+  amount: number
+  balanceAfter: number
+  description?: string | null
+  metadata?: string | null
+  createdAt?: number
+}
+
+export interface SubscriptionPlan {
+  id: string
+  name: string
+  description: string | null
+  type: string
+  creditsPerPeriod: number
+  periodDays: number
+  priceCents: number
+  maxTasksPerDay: number | null
+  maxSandboxDuration: number | null
+  features: string | null
+  active: boolean
+  sortOrder: number
+  createdAt: number
+  updatedAt: number
+}
+
+export type NewSubscriptionPlan = Omit<SubscriptionPlan, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export interface UserSubscription {
+  id: string
+  userId: string
+  planId: string
+  status: string
+  currentPeriodStart: number
+  currentPeriodEnd: number
+  autoRenew: boolean
+  cancelledAt: number | null
+  createdAt: number
+  updatedAt: number
+}
+
+export type NewUserSubscription = Omit<UserSubscription, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export interface DailyUsage {
+  id: string
+  userId: string
+  date: string
+  taskCount: number
+  sandboxDuration: number
+  creditsConsumed: number
+  createdAt: number
+  updatedAt: number
+}
+
+export type NewDailyUsage = Omit<DailyUsage, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export interface CheckpointRecord {
+  taskId: string
+  revision: number
+  schemaVersion: number
+  snapshotJson: string
+  createdAt: number
+  updatedAt: number
+}
+
+// ─── Repository Interfaces ──────────────────────────────────────────────────
+
+export interface UserRepository {
+  findById(id: string): Promise<User | null>
+  findByProviderAndExternalId(provider: string, externalId: string): Promise<User | null>
+  findByApiKey(encryptedApiKey: string): Promise<User | null>
+  findByPhone(phone: string): Promise<User | null>
+  create(user: NewUser): Promise<User>
+  update(id: string, data: Partial<Omit<User, 'id'>>): Promise<User | null>
+  deleteById(id: string): Promise<void>
+  // Admin methods
+  findAll(limit?: number, offset?: number): Promise<User[]>
+  count(): Promise<number>
+  updateRole(id: string, role: 'user' | 'admin'): Promise<User | null>
+  disable(id: string, reason: string, adminUserId: string): Promise<User | null>
+  enable(id: string): Promise<User | null>
+}
+
+export interface LocalCredentialRepository {
+  findByUserId(userId: string): Promise<LocalCredential | null>
+  create(credential: NewLocalCredential): Promise<LocalCredential>
+  update(userId: string, data: Partial<Omit<LocalCredential, 'userId'>>): Promise<LocalCredential | null>
+}
+
+export interface TaskRepository {
+  findById(id: string): Promise<Task | null>
+  findByIdAndUserId(id: string, userId: string): Promise<Task | null>
+  findByUserId(userId: string, limit?: number): Promise<Task[]>
+  findByRepoAndPr(userId: string, prNumber: number, repoUrl: string): Promise<Task[]>
+  findAll(limit: number, offset: number, filters?: { userId?: string; status?: string }): Promise<Task[]>
+  count(filters?: { userId?: string; status?: string }): Promise<number>
+  create(task: NewTask): Promise<Task>
+  update(id: string, data: Partial<Omit<Task, 'id'>>): Promise<Task | null>
+  updateUserId(fromUserId: string, toUserId: string): Promise<void>
+  softDelete(id: string): Promise<void>
+}
+
+export interface ConnectorRepository {
+  findByUserId(userId: string): Promise<Connector[]>
+  findByIdAndUserId(id: string, userId: string): Promise<Connector | null>
+  create(connector: NewConnector): Promise<Connector>
+  update(id: string, userId: string, data: Partial<Omit<Connector, 'id' | 'userId'>>): Promise<Connector | null>
+  updateUserId(fromUserId: string, toUserId: string): Promise<void>
+  delete(id: string, userId: string): Promise<void>
+}
+
+export interface MiniProgramAppRepository {
+  findByUserId(userId: string): Promise<MiniProgramApp[]>
+  findByIdAndUserId(id: string, userId: string): Promise<MiniProgramApp | null>
+  findByAppIdAndUserId(appId: string, userId: string): Promise<MiniProgramApp | null>
+  create(app: NewMiniProgramApp): Promise<MiniProgramApp>
+  update(
+    id: string,
+    userId: string,
+    data: Partial<Omit<MiniProgramApp, 'id' | 'userId'>>,
+  ): Promise<MiniProgramApp | null>
+  delete(id: string, userId: string): Promise<void>
+  updateUserId(fromUserId: string, toUserId: string): Promise<void>
+}
+
+export interface CronTaskRepository {
+  findByUserId(userId: string): Promise<CronTask[]>
+  findByIdAndUserId(id: string, userId: string): Promise<CronTask | null>
+  findAllEnabled(): Promise<CronTask[]>
+  create(task: NewCronTask): Promise<CronTask>
+  update(id: string, userId: string, data: Partial<Omit<CronTask, 'id' | 'userId'>>): Promise<CronTask | null>
+  delete(id: string, userId: string): Promise<void>
+  updateUserId(fromUserId: string, toUserId: string): Promise<void>
+  tryLock(id: string, lockerId: string, maxLockMs: number): Promise<boolean>
+  releaseLock(id: string, lockerId: string): Promise<void>
+}
+
+export interface AccountRepository {
+  findByUserIdAndProvider(userId: string, provider: string): Promise<Account | null>
+  findByProviderAndExternalUserId(provider: string, externalUserId: string): Promise<Account | null>
+  create(account: NewAccount): Promise<Account>
+  update(id: string, data: Partial<Omit<Account, 'id'>>): Promise<Account | null>
+  updateUserId(fromUserId: string, toUserId: string): Promise<void>
+  delete(userId: string, provider: string): Promise<void>
+}
+
+export interface KeyRepository {
+  findByUserId(userId: string): Promise<Key[]>
+  findByUserIdAndProvider(userId: string, provider: string): Promise<Key | null>
+  upsert(key: NewKey): Promise<Key>
+  updateUserId(fromUserId: string, toUserId: string): Promise<void>
+  delete(userId: string, provider: string): Promise<void>
+}
+
+export interface UserResourceRepository {
+  findByUserId(userId: string): Promise<UserResource | null>
+  findByTaskId(taskId: string): Promise<UserResource | null>
+  findAllByUserId(userId: string): Promise<UserResource[]>
+  create(resource: NewUserResource): Promise<UserResource>
+  update(id: string, data: Partial<Omit<UserResource, 'id'>>): Promise<UserResource | null>
+  deleteById(id: string): Promise<void>
+}
+
+export interface SettingRepository {
+  findByUserIdAndKey(userId: string, key: string): Promise<Setting | null>
+  findByUserId(userId: string): Promise<Setting[]>
+  upsert(setting: NewSetting): Promise<Setting>
+  /** Find a system-level setting (userId IS NULL) */
+  findSystemSetting(key: string): Promise<Setting | null>
+  /** Upsert a system-level setting (userId IS NULL) */
+  upsertSystemSetting(key: string, value: string): Promise<Setting>
+  /** Delete a system-level setting (returns true if existed) */
+  deleteSystemSetting(key: string): Promise<boolean>
+  /** List all system-level settings */
+  findAllSystemSettings(): Promise<Setting[]>
+}
+
+export interface DeploymentRepository {
+  findByTaskId(taskId: string): Promise<Deployment[]>
+  findByTaskIdAndTypePath(taskId: string, type: string, path: string | null): Promise<Deployment | null>
+  findByTaskIdAndUserId(taskId: string, userId: string): Promise<Deployment | null>
+  create(deployment: NewDeployment): Promise<Deployment>
+  update(id: string, data: Partial<Omit<Deployment, 'id'>>): Promise<Deployment | null>
+  softDelete(id: string): Promise<void>
+}
+
+export interface AdminLogRepository {
+  create(log: NewAdminLog): Promise<AdminLog>
+  findByAdminUserId(adminUserId: string, limit?: number): Promise<AdminLog[]>
+  findByTargetUserId(targetUserId: string, limit?: number): Promise<AdminLog[]>
+  findAll(limit?: number, offset?: number): Promise<AdminLog[]>
+}
+
+export interface SmsCodeRepository {
+  create(code: NewSmsCode): Promise<SmsCode>
+  findByPhoneAndCode(phone: string, code: string): Promise<SmsCode | null>
+  markUsed(id: string): Promise<void>
+  deleteExpired(): Promise<void>
+}
+
+export interface UserCreditsRepository {
+  findByUserId(userId: string): Promise<UserCredits | null>
+  create(credits: NewUserCredits): Promise<UserCredits>
+  updateByUserId(userId: string, data: Partial<Omit<UserCredits, 'id' | 'userId'>>): Promise<UserCredits | null>
+  getOrCreate(userId: string): Promise<UserCredits>
+  consumeByUserId(userId: string, amount: number, ts: number): Promise<UserCredits | null>
+}
+
+export interface CreditTransactionRepository {
+  create(tx: NewCreditTransaction): Promise<CreditTransaction>
+  findByUserId(userId: string, limit?: number, offset?: number): Promise<CreditTransaction[]>
+  findByUserIdAndType(userId: string, type: string, limit?: number): Promise<CreditTransaction[]>
+  findAll(limit: number, offset: number): Promise<CreditTransaction[]>
+}
+
+export interface SubscriptionPlanRepository {
+  findById(id: string): Promise<SubscriptionPlan | null>
+  findActive(): Promise<SubscriptionPlan[]>
+  findAllActive(): Promise<SubscriptionPlan[]>
+  findAll(): Promise<SubscriptionPlan[]>
+  create(plan: NewSubscriptionPlan): Promise<SubscriptionPlan>
+  update(id: string, data: Partial<Omit<SubscriptionPlan, 'id'>>): Promise<SubscriptionPlan | null>
+  count(): Promise<number>
+}
+
+export interface UserSubscriptionRepository {
+  findByUserId(userId: string): Promise<UserSubscription | null>
+  findActiveByUserId(userId: string): Promise<UserSubscription | null>
+  create(sub: NewUserSubscription): Promise<UserSubscription>
+  update(id: string, data: Partial<Omit<UserSubscription, 'id'>>): Promise<UserSubscription | null>
+  findAllActive(): Promise<UserSubscription[]>
+  findExpiringActive(beforeTime: number): Promise<UserSubscription[]>
+  findByStatus(status: string): Promise<UserSubscription[]>
+}
+
+export interface DailyUsageRepository {
+  findByUserIdAndDate(userId: string, date: string): Promise<DailyUsage | null>
+  create(data: NewDailyUsage): Promise<DailyUsage>
+  update(id: string, data: Partial<Omit<DailyUsage, 'id'>>): Promise<DailyUsage | null>
+  upsert(
+    userId: string,
+    date: string,
+    data: { taskCount?: number; sandboxDuration?: number; creditsConsumed?: number },
+  ): Promise<DailyUsage>
+  findByUserId(userId: string, limit?: number): Promise<DailyUsage[]>
+  findByDate(date: string): Promise<DailyUsage[]>
+  getDateRangeUserStats(
+    startDate: string,
+    endDate: string,
+  ): Promise<Array<{ userId: string; totalTasks: number; totalDuration: number; totalCredits: number }>>
+}
+
+export interface CheckpointRepository {
+  findByTaskId(taskId: string): Promise<CheckpointRecord | null>
+  create(record: CheckpointRecord): Promise<CheckpointRecord | null>
+  compareAndSwap(taskId: string, expectedRevision: number, next: CheckpointRecord): Promise<CheckpointRecord | null>
+}
+
+export interface CommunityWork {
+  id: string
+  userId: string
+  userName: string
+  title: string
+  description: string
+  previewUrl: string | null
+  tags: string // JSON array of tags
+  fileUrls: string // JSON array of file URLs
+  likeCount: number
+  likedBy: string // JSON array of userIds who liked
+  createdAt: number
+  updatedAt: number
+}
+
+export type NewCommunityWork = Omit<CommunityWork, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+// ─── Environment Pool ───────────────────────────────────────────────────────
+
+export interface EnvPoolEntry {
+  id: string
+  status: string // 'creating' | 'ready' | 'claimed' | 'failed'
+  envId: string | null
+  envAlias: string | null
+  envRegion: string | null
+  cosTagValue: string | null
+  policyHash: string | null
+  camUsername: string | null
+  camSecretId: string | null
+  camSecretKey: string | null
+  policyId: number | null
+  claimedByUserId: string | null
+  claimedByTaskId: string | null
+  claimedAt: number | null
+  failReason: string | null
+  createdAt: number
+  updatedAt: number
+}
+
+export type NewEnvPoolEntry = Omit<EnvPoolEntry, 'createdAt' | 'updatedAt'> & {
+  createdAt?: number
+  updatedAt?: number
+}
+
+export interface EnvPoolRepository {
+  /** Find one ready entry (status='ready'), FIFO order */
+  findReady(): Promise<EnvPoolEntry | null>
+  /** CAS: claim a ready entry (status='ready' → 'claimed'). Returns null if already claimed by another pod. */
+  claimEntry(
+    id: string,
+    data: { claimedByUserId: string; claimedByTaskId: string | null; claimedAt: number },
+  ): Promise<EnvPoolEntry | null>
+  /** Find all entries by status */
+  findAllByStatus(status: string): Promise<EnvPoolEntry[]>
+  /** Count entries by status */
+  countByStatus(status: string): Promise<number>
+  /** Count all non-claimed/non-failed entries (creating + ready) */
+  countActive(): Promise<number>
+  create(entry: NewEnvPoolEntry): Promise<EnvPoolEntry>
+  update(id: string, data: Partial<Omit<EnvPoolEntry, 'id'>>): Promise<EnvPoolEntry | null>
+  /** Get pool stats: { creating, ready, claimed, failed } */
+  getStats(): Promise<Record<string, number>>
+}
+
+export interface CommunityWorkRepository {
+  findAll(limit?: number, offset?: number): Promise<CommunityWork[]>
+  findByUserId(userId: string): Promise<CommunityWork[]>
+  findById(id: string): Promise<CommunityWork | null>
+  create(work: NewCommunityWork): Promise<CommunityWork>
+  update(id: string, userId: string, data: Partial<Omit<CommunityWork, 'id' | 'userId'>>): Promise<CommunityWork | null>
+  delete(id: string, userId: string): Promise<void>
+  count(): Promise<number>
+}
+
+// ─── Institutions & Teaching Classes ────────────────────────────────────────
+
+/** 机构内的角色。刻意与 `users.role`（平台运维管理员）分开：机构角色是多对多的。 */
+export type InstitutionMemberRole = 'owner' | 'admin' | 'teacher'
+export type InstitutionMemberStatus = 'active' | 'left'
+export type ClassAiUsageMode = 'class_only' | 'anytime'
+export type ClassTeacherRole = 'lead' | 'assistant'
+export type ClassEnrollmentStatus = 'active' | 'left'
+export type LifecycleStatus = 'active' | 'archived'
+
+export interface Institution {
+  id: string
+  name: string
+  status: LifecycleStatus
+  createdAt: number
+  updatedAt: number
+}
+
+export interface InstitutionMember {
+  id: string
+  institutionId: string
+  userId: string
+  role: InstitutionMemberRole
+  status: InstitutionMemberStatus
+  createdAt: number
+  updatedAt: number
+}
+
+export interface TeacherClass {
+  id: string
+  institutionId: string
+  name: string
+  aiUsageMode: ClassAiUsageMode
+  /** 班级共享额度；null 表示未设置（不限制）。 */
+  xiaobaoCreditLimit: number | null
+  status: LifecycleStatus
+  archivedAt: number | null
+  createdAt: number
+  updatedAt: number
+}
+
+export interface ClassTeacher {
+  classId: string
+  userId: string
+  role: ClassTeacherRole
+  createdAt: number
+}
+
+export interface ClassEnrollment {
+  id: string
+  classId: string
+  studentUserId: string
+  status: ClassEnrollmentStatus
+  joinedAt: number
+  /** 退班时间；保留记录以便历史课堂与作品仍能定位归属。 */
+  leftAt: number | null
+}
+
+// ─── Courses & Lessons ──────────────────────────────────────────────────────
+
+export type CourseStage = 'lower_primary' | 'upper_primary' | 'middle_school'
+export type CourseStatus = 'ready' | 'draft'
+export type LessonResourceType = 'slides' | 'demo' | 'worksheet' | 'assignment'
+export type LessonResourceStatus = 'ready' | 'planned'
+export type LessonProgressStatus = 'completed' | 'next' | 'locked'
+
+export interface Course {
+  id: string
+  institutionId: string
+  title: string
+  description: string
+  /** 空字符串表示用品牌默认图。 */
+  coverAsset: string
+  stage: CourseStage
+  topic: string
+  status: CourseStatus
+  ageRange: string
+  /** JSON 字符串，内容为 string[]。 */
+  goals: string
+  expectedOutcome: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface CourseChapter {
+  id: string
+  courseId: string
+  title: string
+  sortOrder: number
+}
+
+export interface CourseLesson {
+  id: string
+  chapterId: string
+  title: string
+  sortOrder: number
+  durationMinutes: number
+  /** 以下数组字段均为 JSON 字符串。 */
+  objectives: string
+  steps: string
+  teacherTips: string
+  assignment: string
+  capabilities: string
+  skills: string
+  mcpServers: string
+}
+
+export interface LessonResource {
+  id: string
+  lessonId: string
+  title: string
+  type: LessonResourceType
+  status: LessonResourceStatus
+}
+
+export interface ClassCourse {
+  classId: string
+  courseId: string
+  assignedAt: number
+}
+
+export interface LessonProgress {
+  id: string
+  classId: string
+  lessonId: string
+  status: LessonProgressStatus
+  /** 未完成的课时为 null，而不是用 0 冒充时间戳。 */
+  completedAt: number | null
+}
+
+// ─── Class Sessions ─────────────────────────────────────────────────────────
+
+/**
+ * 一次开课的记录（deploy 副本只镜像行类型；桌面端目前不提供教师后台，见设计文档 §7）。
+ */
+export interface ClassSession {
+  id: string
+  classId: string
+  lessonId: string
+  startedByUserId: string
+  startedAt: number
+  /** 进行中为 null。 */
+  endedAt: number | null
+  /** 下课才写入；进行中的课没有时长。 */
+  durationMinutes: number | null
+  pointLimit: number
+  /** 以下数组字段均为 JSON 字符串。 */
+  capabilities: string
+  skills: string
+  mcpServers: string
+  /** 开课时的人数快照；名单无法确定时为 null。 */
+  studentCount: number | null
+}
+
+// ─── Database Provider ──────────────────────────────────────────────────────
+
+export interface DatabaseProvider {
+  users: UserRepository
+  localCredentials: LocalCredentialRepository
+  tasks: TaskRepository
+  connectors: ConnectorRepository
+  miniprogramApps: MiniProgramAppRepository
+  cronTasks: CronTaskRepository
+  accounts: AccountRepository
+  keys: KeyRepository
+  userResources: UserResourceRepository
+  settings: SettingRepository
+  deployments: DeploymentRepository
+  adminLogs: AdminLogRepository
+  envPool: EnvPoolRepository
+  communityWorks: CommunityWorkRepository
+  smsCodes: SmsCodeRepository
+  userCredits: UserCreditsRepository
+  creditTransactions: CreditTransactionRepository
+  subscriptionPlans: SubscriptionPlanRepository
+  userSubscriptions: UserSubscriptionRepository
+  dailyUsage: DailyUsageRepository
+  xiaobaoRuntimeCheckpoints: CheckpointRepository
+}

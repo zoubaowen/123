@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1188 244" role="img" aria-label="AI小宝学院">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10251f"/>
+      <stop offset="0.55" stop-color="#153126"/>
+      <stop offset="1" stop-color="#26324a"/>
+    </linearGradient>
+    <linearGradient id="trim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fed7aa"/>
+      <stop offset="1" stop-color="#fb923c"/>
+    </linearGradient>
+    <radialGradient id="face" cx="40%" cy="25%" r="80%">
+      <stop offset="0" stop-color="#ddfcf2"/>
+      <stop offset="1" stop-color="#5eead4"/>
+    </radialGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="15"/></filter>
+  </defs>
+  <rect width="1188" height="244" rx="28" fill="url(#bg)"/>
+  <circle cx="105" cy="122" r="88" fill="#67e8f9" opacity=".12" filter="url(#glow)"/>
+  <path d="M31 137C57 72 143 52 184 99" fill="none" stroke="#67e8f9" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+  <path d="M43 164C90 202 176 163 182 106" fill="none" stroke="#fef3c7" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+  <g transform="translate(39 24)">
+    <path d="M69 37V21" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M69 1l4 10 11 1-9 7 3 11-9-6-9 6 3-11-9-7 11-1z" fill="#fff7ed"/>
+    <ellipse cx="25" cy="91" rx="14" ry="23" fill="url(#trim)"/>
+    <ellipse cx="113" cy="91" rx="14" ry="23" fill="url(#trim)"/>
+    <path d="M17 104C17 54 38 36 69 36s52 18 52 68c0 43-21 70-52 70s-52-27-52-70z" fill="#fff7ed"/>
+    <path d="M27 88C27 54 45 44 69 44s42 10 42 44c0 28-18 43-42 43S27 116 27 88z" fill="url(#trim)"/>
+    <path d="M34 87c0-25 15-34 35-34s35 9 35 34c0 22-15 34-35 34S34 109 34 87z" fill="url(#face)"/>
+    <ellipse cx="53" cy="84" rx="8" ry="10" fill="#082f49"/>
+    <ellipse cx="85" cy="84" rx="8" ry="10" fill="#082f49"/>
+    <circle cx="56" cy="80" r="2.5" fill="white"/>
+    <circle cx="88" cy="80" r="2.5" fill="white"/>
+    <path d="M58 101c6 8 16 8 22 0" fill="none" stroke="#0e7490" stroke-width="4" stroke-linecap="round"/>
+    <path d="M50 137c8 13 30 13 38 0" fill="none" stroke="url(#trim)" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <text x="238" y="112" fill="#ffffff" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="58" font-weight="800">AI小宝学院</text>
+  <text x="241" y="160" fill="#a7f3d0" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="23" font-weight="600" letter-spacing="2">和小宝一起，把好点子变成作品</text>
+  <g fill="#fef3c7" opacity=".85">
+    <circle cx="1070" cy="60" r="4"/><circle cx="1110" cy="98" r="3"/><circle cx="1028" cy="184" r="3"/>
+  </g>
+</svg>

@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1784971639364,
+      "tag": "0000_shallow_ozymandias",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1784998703819,
+      "tag": "0001_nervous_karma",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1785261300000,
+      "tag": "0002_unique_user_phone",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1787370304658,
+      "tag": "0003_chubby_justice",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1787450923074,
+      "tag": "0004_xiaobao_usage_ledger",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1789305632652,
+      "tag": "0005_xiaobao_task_capability",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1789342666787,
+      "tag": "0006_xiaobao_budget_cap",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1789345632797,
+      "tag": "0007_teacher_class_model",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1789351578080,
+      "tag": "0008_teacher_course_model",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1789357609736,
+      "tag": "0009_teacher_class_sessions",
+      "breakpoints": true
+    }
+  ]
+}
